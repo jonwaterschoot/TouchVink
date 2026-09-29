@@ -6,7 +6,9 @@ A delayed copy of the output is ring-modulated, reverberated and passed through 
 
 > Status: v0.2 — compiles for the Daisy Seed, DSP tested on desktop, **not yet tested on hardware**. See `docs/PLAN.md`.
 
-**Interactive manual:** [webmanual/](webmanual/) — the panel drawn live in the browser, with the screen and a manual entry for every control. It plays on its own, or mirrors and plays the device over USB MIDI.
+**Interactive manual:** [jonwaterschoot.github.io/TouchVink](https://jonwaterschoot.github.io/TouchVink/) — the panel drawn live in the browser, with the screen and a manual entry for every control. It plays on its own, or mirrors and plays the device over USB MIDI (Chrome/Edge). Source in [webmanual/](webmanual/).
+
+**Firmware:** download the `.bin` from [Releases](../../releases) and flash it at [flash.daisy.audio](https://flash.daisy.audio) (Seed in DFU mode: hold BOOT, tap RESET), or build it yourself below.
 
 ## Signal flow
 
@@ -66,6 +68,8 @@ flowchart LR
 The device also streams its state as SysEx, which the [web manual](webmanual/) reads. Full map: [webmanual/README.md](webmanual/README.md#midi-map).
 
 ## Build
+
+To flash a release, you don't need any of this: see **Firmware** at the top.
 
 ```bash
 git clone --recurse-submodules <this repo>

@@ -72,7 +72,7 @@ export class Labels {
   private logEl: HTMLDivElement;
   private log: { key: string; html: string }[] = [];
   private staticWrap: HTMLDivElement;
-  private overlayMode: OverlayMode = 'dynamic';
+  private overlayMode: OverlayMode = 'full';  // labels on until the reader turns them off
   private focus: Focus | null = null;
   private hlTarget: Element | null = null;
   private lastSteerCount = -1;

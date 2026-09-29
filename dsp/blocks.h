@@ -73,6 +73,27 @@ struct Brown {
     }
 };
 
+// ------------------------------------------------------------------ oscillator ("V-FUG")
+// Sine and band-limited saw from one phase, so the shape can be blended continuously.
+struct BlendOsc {
+    float ph = 0.f, inc = 0.f, sr = 48000.f;
+    void Init(float sample_rate) { sr = sample_rate; }
+    void SetFreq(float hz) { inc = clampf(hz / sr, 0.f, 0.45f); }
+    static float PolyBlep(float t, float dt) {
+        if (t < dt) { t /= dt; return t + t - t * t - 1.f; }
+        if (t > 1.f - dt) { t = (t - 1.f) / dt; return t * t + t + t + 1.f; }
+        return 0.f;
+    }
+    // saw_mix 0 = sine, 1 = saw. Output about +-0.5.
+    float Process(float saw_mix) {
+        const float s = sinf(2.f * float(M_PI) * ph);
+        const float w = 2.f * ph - 1.f - PolyBlep(ph, inc);
+        ph += inc;
+        if (ph >= 1.f) ph -= 1.f;
+        return 0.5f * lerpf(s, w, saw_mix);
+    }
+};
+
 // ------------------------------------------------------------------ envelope follower ("AMD")
 struct EnvFollower {
     float env = 0.f, att = 1.f, rel = 1.f;

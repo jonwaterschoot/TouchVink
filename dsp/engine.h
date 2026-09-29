@@ -23,7 +23,8 @@
 
 namespace touchvink {
 
-enum class OscShape : uint8_t { Sine = 0, Saw, Square };
+// SW1: how the osc moves by itself. Lfo = slow sweep, Drunk = random walk (pitch and shape).
+enum class OscMotion : uint8_t { Lfo = 0, Steady, Drunk };
 enum class NoiseMode : uint8_t { Pink = 0, Drift, Brown };  // Drift = pink<->brown moved by an LFO
 
 // All values normalized 0..1 unless noted. Written from the control thread,
@@ -35,10 +36,10 @@ struct Params {
     float reverb = 0.2f;       // S33
     float loop_gain = 0.5f;    // S34  VCA -> feedback
     float delay = 0.3f;        // S35
-    float source_mix = 0.5f;   // S36  0 = ext only, 1 = internal only
+    float source_mix = 0.5f;   // S36  0 = ext only, 1 = internal only (fader is inverted in the firmware)
     float out_vol = 0.6f;      // S37
 
-    OscShape shape = OscShape::Sine;   // SW1
+    OscMotion motion = OscMotion::Steady; // SW1
     NoiseMode noise = NoiseMode::Pink; // SW2
 
     float pad_freq_hz = 110.f;  // chosen by pads P3..P9 in OSC mode
@@ -61,6 +62,10 @@ class Engine {
     float ExciteLevel() const { return exc_env_.y; }
     float LoopLevel() const { return env_.env; }
     bool SteerFired() { bool f = steer_fired_; steer_fired_ = false; return f; }
+    // Running count of steering events, for telemetry (SteerFired is the LED's).
+    uint32_t SteerCount() const { return steer_count_; }
+    // Osc pitch right now: pad or note, pressure bend, motion and steering.
+    float OscHz() const { return osc_freq_.y; }
 
     void Process(float inL, float inR, float& outL, float& outR);
 
@@ -72,8 +77,12 @@ class Engine {
     float sr_ = 48000.f;
 
     // sources (IN2)
-    daisysp::Oscillator osc_;
+    BlendOsc osc_;
     daisysp::Oscillator noise_lfo_;
+    daisysp::Oscillator motion_lfo_;
+    float drunk_oct_ = 0.f, drunk_shape_ = cfg::kOscSawMix;
+    uint32_t drunk_timer_ = 0;
+    OnePole motion_oct_, motion_shape_;
     Rng rng_;
     Pink pink_;
     Brown brown_;
@@ -82,6 +91,7 @@ class Engine {
     float steer_ratio_ = 1.f;
     bool steer_armed_ = true;
     bool steer_fired_ = false;
+    volatile uint32_t steer_count_ = 0;
     uint32_t steer_timer_ = 0;
 
     // loop

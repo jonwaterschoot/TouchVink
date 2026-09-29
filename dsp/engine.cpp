@@ -6,8 +6,12 @@ void Engine::Init(float sr, float* bufL, float* bufR, size_t len, daisysp::Rever
     sr_ = sr;
 
     osc_.Init(sr);
-    osc_.SetAmp(0.5f);
-    osc_.SetWaveform(daisysp::Oscillator::WAVE_SIN);
+    motion_lfo_.Init(sr);
+    motion_lfo_.SetWaveform(daisysp::Oscillator::WAVE_SIN);
+    motion_lfo_.SetFreq(cfg::kMotionLfoHz);
+    motion_lfo_.SetAmp(1.f);
+    motion_oct_.Init(cfg::kMotionDrunkGlideSec, sr, 0.f);
+    motion_shape_.Init(cfg::kMotionDrunkGlideSec, sr, cfg::kOscSawMix);
     noise_lfo_.Init(sr);
     noise_lfo_.SetWaveform(daisysp::Oscillator::WAVE_SIN);
     noise_lfo_.SetFreq(cfg::kNoiseLfoHz);
@@ -54,11 +58,6 @@ void Engine::SetDecayStep(int i) { exc_env_.SetDecay(cfg::kDecaySteps[i % 3]); }
 
 // Things that don't need per-sample updates (every 16 samples).
 void Engine::UpdateSlowParams() {
-    switch (p_.shape) {
-        case OscShape::Sine: osc_.SetWaveform(daisysp::Oscillator::WAVE_SIN); break;
-        case OscShape::Saw: osc_.SetWaveform(daisysp::Oscillator::WAVE_POLYBLEP_SAW); break;
-        case OscShape::Square: osc_.SetWaveform(daisysp::Oscillator::WAVE_POLYBLEP_SQUARE); break;
-    }
     const float rv = p_.reverb;
     verb_->SetFeedback(lerpf(cfg::kRevFbMin, cfg::kRevFbMax, rv));
 
@@ -72,10 +71,33 @@ void Engine::UpdateSlowParams() {
 // Internal source (IN2). Returns the free-running carrier (osc/noise at the S30
 // balance) and writes the AD-gated version to 'excite'.
 float Engine::InternalSource(float& excite) {
-    // --- oscillator (V-FUG) with pad pitch, pressure bend and steering ratio
-    const float target = p_.pad_freq_hz * steer_ratio_ * exp2f(p_.pitch_pressure * cfg::kPressureBendOct);
+    // --- motion (SW1): an offset in octaves and a sine<->saw shape for the osc
+    float m_oct = 0.f, m_shape = cfg::kOscSawMix;
+    if (p_.motion == OscMotion::Lfo) {
+        const float l = motion_lfo_.Process();  // -1..1
+        m_oct = l * cfg::kMotionLfoOct;
+        m_shape = 0.5f + 0.5f * l;
+    } else if (p_.motion == OscMotion::Drunk) {
+        if (drunk_timer_ == 0) {
+            drunk_timer_ = static_cast<uint32_t>(cfg::kMotionDrunkStepSec * sr_);
+            const float r = cfg::kMotionDrunkRangeOct;
+            drunk_oct_ += rng_.Bi() * cfg::kMotionDrunkStepOct;
+            if (drunk_oct_ > r) drunk_oct_ = 2.f * r - drunk_oct_;   // reflect at the edges
+            if (drunk_oct_ < -r) drunk_oct_ = -2.f * r - drunk_oct_;
+            drunk_shape_ = clampf(drunk_shape_ + rng_.Bi() * 0.25f, 0.f, 1.f);
+        }
+        drunk_timer_--;
+        m_oct = drunk_oct_;
+        m_shape = drunk_shape_;
+    }
+    // smoothed so switching SW1 never clicks
+    m_oct = motion_oct_.Process(m_oct);
+    m_shape = motion_shape_.Process(m_shape);
+
+    // --- oscillator (V-FUG) with pad pitch, pressure bend, steering ratio and motion
+    const float target = p_.pad_freq_hz * steer_ratio_ * exp2f(p_.pitch_pressure * cfg::kPressureBendOct + m_oct);
     osc_.SetFreq(osc_freq_.Process(target));
-    const float o = osc_.Process();
+    const float o = osc_.Process(m_shape);
 
     // --- noise
     const float w = rng_.Bi();
@@ -175,6 +197,7 @@ void Engine::Process(float inL, float inR, float& outL, float& outR) {
             steer_ratio_ = exp2f(rng_.Bi() * cfg::kSteerDepthOct);
             steer_armed_ = false;
             steer_fired_ = true;
+            steer_count_ = steer_count_ + 1;
             steer_timer_ = static_cast<uint32_t>(cfg::kSteerMinIntervalSec * sr_);
         } else if (!steer_armed_ && e < slow * cfg::kSteerRearm) {
             steer_armed_ = true;

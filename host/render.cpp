@@ -60,8 +60,8 @@ int main() {
              if (step != last && t < 12.f) { last = step; e.params().pad_freq_hz = cfg::kPadFreqs[3 + step % 4]; e.TriggerExcite(0.8f); }
          }},
 
-        {"03_drone_steer", "Saw drone (decay step 3) + noise, steering on: env peaks resample the osc pitch.", 20.f,
-         [](Engine& e) { auto& p = e.params(); p.shape = OscShape::Saw; p.source_mix = 1.f; p.osc_noise = 0.3f; p.ring = 0.7f; p.loop_gain = 0.9f; p.delay = 0.35f; p.reverb = 0.6f; p.pad_freq_hz = 110.f; p.steer = true; e.SetDecayStep(2); e.TriggerExcite(0.7f); },
+        {"03_drone_steer", "Drunk-walking osc drone (decay step 3) + noise, steering on: env peaks resample the osc pitch.", 20.f,
+         [](Engine& e) { auto& p = e.params(); p.motion = OscMotion::Drunk; p.source_mix = 1.f; p.osc_noise = 0.3f; p.ring = 0.7f; p.loop_gain = 0.9f; p.delay = 0.35f; p.reverb = 0.6f; p.pad_freq_hz = 110.f; p.steer = true; e.SetDecayStep(2); e.TriggerExcite(0.7f); },
          nullptr},
 
         {"04_ext_dist_scream", "Ext input bursts, max loop gain, hard distortion pressed in: worst case for stability.", 15.f,
@@ -73,8 +73,8 @@ int main() {
              e.params().dist_pressure = 0.5f + 0.5f * sinf(t * 0.7f);
          }},
 
-        {"05_drift_noise_fold", "Drifting pink/brown noise, pure ring with a 5 Hz osc chopping the loop, fold distortion.", 16.f,
-         [](Engine& e) { auto& p = e.params(); p.noise = NoiseMode::Drift; p.source_mix = 1.f; p.osc_noise = 0.5f; p.pad_freq_hz = 5.f; p.ring = 0.85f; p.loop_gain = 0.95f; p.delay = 0.7f; p.reverb = 0.5f; p.dist = DistType::Fold; p.dist_pressure = 0.2f; e.SetAttackStep(2); e.SetDecayStep(2); e.TriggerExcite(1.f); },
+        {"05_drift_noise_fold", "Drifting pink/brown noise, pure ring with an LFO-swept 5 Hz osc chopping the loop, fold distortion.", 16.f,
+         [](Engine& e) { auto& p = e.params(); p.motion = OscMotion::Lfo; p.noise = NoiseMode::Drift; p.source_mix = 1.f; p.osc_noise = 0.5f; p.pad_freq_hz = 5.f; p.ring = 0.85f; p.loop_gain = 0.95f; p.delay = 0.7f; p.reverb = 0.5f; p.dist = DistType::Fold; p.dist_pressure = 0.2f; e.SetAttackStep(2); e.SetDecayStep(2); e.TriggerExcite(1.f); },
          nullptr},
     };
 

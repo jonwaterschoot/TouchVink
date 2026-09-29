@@ -1,0 +1,52 @@
+# Builds the interactive web manual (webmanual/) and deploys it to GitHub Pages,
+# at the site root: https://<user>.github.io/TouchVink/
+# One-time repo setting: Settings -> Pages -> Source: "GitHub Actions".
+
+name: Deploy web manual
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'webmanual/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: webmanual/package-lock.json
+      - name: Build
+        working-directory: webmanual
+        run: |
+          npm ci
+          npm run build
+          touch dist/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: webmanual/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

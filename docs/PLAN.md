@@ -1,14 +1,15 @@
 # Plan & roadmap
 
-## Where it stands (v0.1)
+## Where it stands (v0.2)
 
 | Part | State |
 |---|---|
 | Signal flow + control map | Done — see `SKETCHES.md` |
 | DSP engine (`dsp/`) | Written, runs on desktop, no NaN / runaway in 5 stress scenarios |
 | Hardware layer (`hw/`) | Written: knobs, switches, MPR121 with pressure + velocity |
-| Firmware (`TouchVink.cpp`) | **Compiles** for the Daisy Seed (94 kB / 128 kB flash) — **not yet run on hardware** |
+| Firmware (`TouchVink.cpp`) | **Compiles** for the Daisy Seed (127.6 kB / 128 kB flash with USB MIDI + OLED) — **not yet run on hardware** |
 | Host listening test (`host/`) | Renders WAVs of 5 scenarios |
+| MIDI, OLED, web manual | Written, firmware compiles, web manual tested in the browser (simulated) — **not yet run against hardware** |
 
 ## Step 1 — first flash (on your PC)
 
@@ -26,12 +27,13 @@ Tick these in order; each one isolates a layer.
 
 1. **LED fast-blinks forever** → MPR121 not answering (I2C pins / address). Otherwise continue.
 2. **Knob direction.** Every knob should increase clockwise. If one is reversed, flip it in `Knobs::Process()`.
-3. **Switch positions.** Check SW1 up = sine, SW2 up = pink. If a switch reads upside down, swap the pins in `Switches::Init()`.
+3. **Switch positions.** SW1 (left lever) left = LFO motion, SW2 (right lever) top = pink. If a lever reads mirrored, flip its mapping in `Switches::SW1()` / `SW2()`.
 4. **Pads.** P0 → 1 blink, P2 → 2 blinks, P1 tap → 3 blinks (steer on) / 1 blink (off).
-5. **Pressure calibration.** `Pads::max_delta` holds per-pad full-scale values copied from TouchString's unit. Temporarily log `pads.Pressure(i)` (set `DEBUG = 1`, `hw.StartLog()`), press each pad hard, and put the peak delta values into the array.
+5. **Pressure calibration.** `Pads::max_delta` holds per-pad full-scale values copied from TouchString's unit. Temporarily log `pads.Pressure(i)` (build with `make NO_USB_MIDI=1` so USB is serial, then `hw.StartLog()`), press each pad hard, and put the peak delta values into the array.
 6. **CPU load.** Add `daisy::CpuLoadMeter` around `engine.Process` in the callback and log max load. ReverbSc is the heaviest block; if load is above ~70 % raise `kBlockSize` to 32 or 48.
 7. **Input level.** Feed a line signal, S36 fully left, S34 at zero: you should hear the input with reverb/ring only. Adjust the S31 taper if +12 dB is too hot.
-8. **The Vink zone.** S34 at ~75 %, S32 at 50 %, S35 mid, no input: the loop should bloom from silence within ~5–10 s and stabilise.
+8. **Screen and MIDI.** With an OLED fitted: the boot animation, then `TOUCHVINK / v0.2 ready`; touching anything names it. Open the web manual, *Connect MIDI*: the drawing should follow the panel, and the loop meter should move. Watch that pads still feel immediate while the screen redraws (each redraw blocks the control loop for up to ~14 ms).
+9. **The Vink zone.** S34 at ~75 %, S32 at 50 %, S35 mid, no input: the loop should bloom from silence within ~5–10 s and stabilise.
 
 ## Step 3 — tuning (by ear)
 
@@ -60,7 +62,8 @@ You want a filter, but there's no free knob. Options, from least to most "rule-b
 - [ ] Hardware bring-up (checklist above)
 - [ ] Filter (option 2 or 3)
 - [ ] Stereo steering: independent S&H per channel for wider movement
-- [ ] USB MIDI: CC out for all knobs + pad pressure (reuse the TouchPlaited `midi/` module and visualizer)
-- [ ] Optional: log the loop envelope and steering events over MIDI to drive the TouchPlaited-style web visualizer
+- [x] USB MIDI both ways: notes, pads, CCs with pickup (TouchPlaited `midi/` module)
+- [x] Loop envelope, excitation and steering streamed as SysEx; web manual in `webmanual/`
+- [x] OLED screen + boot animation (TouchPlaited `display/`)
 - [ ] Faceplate artwork from the Simple Touch template (in the AudreyTouch repo, `Faceplate/`)
 - [ ] Manual (`docs/MANUAL.md`) once the controls settle

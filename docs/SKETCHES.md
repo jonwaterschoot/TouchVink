@@ -14,7 +14,7 @@ Vink worked at the Institute of Sonology (Utrecht) with a studio of discrete mod
 | T-SAH | Triggered sample & hold | Samples FUG when triggered | Steering S&H (P1) |
 | +5V | DC offset | Sets the base pitch | Pad pitch (P3–P9) |
 | MXA | Mixer / amplifier | Sums S&H + FUG + offset → pitch CV | Pitch = pad × steer ratio × pressure bend |
-| V-FUG | Voltage-controlled function generator | Ring-mod carrier | Oscillator (SW1 shape) |
+| V-FUG | Voltage-controlled function generator | Ring-mod carrier | Oscillator (SW1 motion) |
 | REC | Tape recorder (record → playback head) | The loop delay | Loop delay (S35) |
 | AC-MUP | AC multiplier | Ring modulator: REC × V-FUG | Ring amount (S32) |
 | REV | Reverb (spring / plate) | Smear inside the loop | Reverb (S33) |
@@ -79,9 +79,9 @@ EXT AUDIO (vol S31) ────────────────────
 | S33 | REV | Reverb (mix and decay together) |
 | S34 | VCA | Loop gain into the compressor |
 | S35 | DELAY | Loop delay 2 ms → 1.9 s (log), tape-style glide |
-| S36 (left fader) | MIX SOURCE | Ext ↔ internal source |
+| S36 (left fader) | MIX SOURCE | Internal (bottom) ↔ ext (top) |
 | S37 (right fader) | AMP, VOL OUT | Output level |
-| SW1 | OSC source shape | Sine / Saw / Square |
+| SW1 | OSC source shape | Changed: LFO / steady / drunk motion (the shape switch had little audible effect in the loop) |
 | SW2 | NOISE | Pink / Pink↔Brown drift (LFO) / Brown |
 | P3–P9 | "Different osc FR." / "Different DISTORTION (inserted at end)" | Depends on pad mode (below) |
 | P0 | PADS OSC | Pads → osc mode |
@@ -91,5 +91,5 @@ EXT AUDIO (vol S31) ────────────────────
 **→ additions not in the sketch**
 - **P1 = steering** (the Vink T-SAH path you wanted on the pads). Tap to latch on/off, hold for momentary.
 - **Pressure** (TouchString method): in OSC mode, pressing harder bends the osc up to +1 octave; in DIST mode, pressure adds drive.
-- **P11 step 3 = drone**: the excitation holds instead of decaying, so the internal source can run continuously without keeping a finger on a pad.
+- **P11 step 3 = drone**: the excitation holds instead of decaying, so the internal source can run continuously without keeping a finger on a pad. Play-pad pressure also latches at its peak (pitch bend in OSC mode, drive in DIST mode). Hold P11 0.5 s to drop back to the shortest decay.
 - **P10 + P11 held 1 s** = recalibrate the touch pads.

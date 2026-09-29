@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- viewport-fit=cover: the stage is sized in dvh and has its own
+         letterboxing, so let it use the notch area rather than have the UA
+         inset the whole page. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>TouchVink Manual</title>
+    <link rel="icon" href="data:," />
+    <meta name="description" content="Interactive manual for TouchVink, a Jaap Vink style feedback instrument for the Synthux Simple Touch." />
+    <!-- Condensed face for the static label overlays ('Aa' mode). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <div id="topbar"></div>
+      <div id="stage">
+        <div id="panel-wrap"></div>
+        <div id="overlay"></div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -30,8 +30,8 @@ bool Knobs::Process() {
 
 // ============================================================ Switches
 void Switches::Init() {
-    sw1_.Init(D7, D6);
-    sw2_.Init(D9, D8);
+    sw1_.Init(D9, D8);  // left lever
+    sw2_.Init(D7, D6);  // right lever
 }
 
 // ============================================================ Pads (MPR121 with pressure)
@@ -82,6 +82,22 @@ bool Pads::Init() {
     return ReadBurst(0x00, probe, 2);
 }
 
+void Pads::SetVirtual(int pad, bool on, float velocity) {
+    if (pad < 0 || pad >= kNumPads) return;
+    const uint16_t m = 1u << pad;
+    if (on) {
+        virt_ |= m;
+        virt_velocity_[pad] = velocity;
+        virt_pressure_[pad] = 0.f;
+    } else {
+        virt_ &= ~m;
+    }
+}
+
+void Pads::SetVirtualPressure(int pad, float pressure) {
+    if (pad >= 0 && pad < kNumPads) virt_pressure_[pad] = pressure;
+}
+
 void Pads::Recalibrate() {
     Write(0x5E, 0x00);
     System::Delay(5);
@@ -109,17 +125,27 @@ void Pads::Process() {
         int32_t delta = int32_t(base) - int32_t(filt);
         if (delta < 0) delta = 0;
 
-        const bool touched = (hw_state & m) && delta >= 3;
+        const bool finger = (hw_state & m) && delta >= 3;
+        const bool virt = virt_ & m;
+        const bool touched = finger || virt;
         const bool was = state_ & m;
         const float full = max_delta[i] > 40.f ? max_delta[i] - 5.f : 35.f;
         float norm = (delta - 5) / full;
         norm = norm < 0.f ? 0.f : (norm > 1.f ? 1.f : norm);
+        float target = finger ? norm * norm : 0.f;
+        if (virt && virt_pressure_[i] > target) target = virt_pressure_[i];
 
         if (touched && !was) {
             state_ |= m;
-            strike_[i] = 3;  // collect the peak over a few reads for velocity
-            peak_[i] = delta;
             held_ms_[i] = 0;
+            if (finger) {
+                strike_[i] = 3;  // collect the peak over a few reads for velocity
+                peak_[i] = delta;
+            } else {
+                strike_[i] = 0;  // a MIDI note brings its own velocity
+                velocity_[i] = virt_velocity_[i];
+                rise_ |= m;
+            }
         } else if (!touched && was) {
             state_ &= ~m;
             fall_ |= m;
@@ -141,7 +167,7 @@ void Pads::Process() {
                     rise_ |= m;
                 }
             }
-            pressure_[i] += 0.4f * (norm * norm - pressure_[i]);
+            pressure_[i] += 0.4f * (target - pressure_[i]);
         } else {
             pressure_[i] *= 0.6f;
             if (pressure_[i] < 0.01f) pressure_[i] = 0.f;

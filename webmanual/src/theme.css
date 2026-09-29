@@ -1,0 +1,25 @@
+/* Web theme, shared with TouchPlaited (doc/theme.css there) so the two sites
+   read as one family. Dark, flat, sharp, warm. No gradients, no box-shadows,
+   no blur: hierarchy comes from borders and type, never elevation. One accent
+   (the Simple Touch illustration yellow); backgrounds stay near-black so
+   colour always means something. */
+
+:root {
+  --bg:        #141412;  /* page — warm near-black */
+  --surface:   #1d1c19;  /* the one raised tone: cards, drawers, menus */
+  --overlay:   rgba(18, 17, 15, 0.92);  /* surface floating over artwork */
+  --line:      #35322b;  /* borders */
+  --line-hi:   #4a4538;  /* borders, emphasized */
+  --text:      #e8e4da;  /* ~13:1 on --bg */
+  --dim:       #8f8a7d;  /* secondary text, ~4.6:1 */
+  --accent:    #edb655;  /* Simple Touch yellow, ~9:1 — interactive, headings */
+  --accent-hi: #ffd97a;  /* hover only */
+  --value:     #9fd0ff;  /* live values (visualizer convention) */
+  --alert:     #e6371e;
+  --font: 'Cascadia Mono', Consolas, 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* sharp corners, everywhere, no exceptions */
+* {
+  border-radius: 0 !important;
+}

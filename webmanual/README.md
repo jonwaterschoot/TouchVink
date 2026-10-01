@@ -48,12 +48,18 @@ All combinable.
 | `?midi` | connect Web MIDI (needs a prior permission grant) |
 | `?drawer` | open the MIDI drawer (CC faders + piano) |
 | `?menu` | open the ☰ menu |
-| `?transparent` | transparent page background, for OBS browser-source overlays |
+| `?transparent` | transparent page background, for an OBS Browser Source |
+| `?bg=green` / `blue` / `magenta` | solid background to chroma-key out (also under ☰ → *Settings* → *Background*) |
 | `?bare` | hide the ☰ menu |
 | `?view=pads` / `?view=panel` | crop to the pad field / the knob panel |
 | `?zoom=1.5` | scale everything |
 
-**OBS setup.** Add a Browser Source pointing at `http://localhost:5173/?midi&transparent&bare` (or the hosted page with the same flags). The panel floats over your footage as an overlay, with no visible browser window. OBS browser sources are Chromium, so Web MIDI works inside them. The telemetry sends the full state in every frame, so restarting OBS or the source mid-stream picks the state straight back up. The info panel can be dragged by its ⠿ title bar, so you can put it wherever the shot needs it. Label mode, text sizes and positions are stored per browser, so set them inside OBS itself. Leave out `&bare` for a moment, right-click the source → *Interact*, and use ☰ → *Settings*.
+**OBS setup.** OBS's built-in browser doesn't get Web MIDI, so a Browser Source can't follow the device. There are two setups:
+
+- **With the device: capture Chrome and key out the background.** Open the page in Chrome with *Connect MIDI*, and set ☰ → *Settings* → *Background* to *Green* (or open it with `?midi&bg=green&bare`). In OBS, add a Window Capture of that Chrome window and put a **Chroma Key** filter on it with the same key colour. Crop the browser's own UI with Alt-drag or a Crop filter. Use *Blue* or *Magenta* if green clashes with something in your shot. The telemetry sends the full state in every frame, so a capture that restarts mid-stream picks the state straight back up.
+- **Without the device (demo or hands-on): Browser Source.** Add a Browser Source pointing at `https://jonwaterschoot.github.io/TouchVink/?transparent&bare` (add `&demo` for the scripted demo). The page background is truly transparent, so no keying is needed. Label mode, text sizes and positions are stored per browser, so set them inside OBS: leave out `&bare` for a moment, right-click the source → *Interact*, and use ☰ → *Settings*.
+
+Either way, the info panel can be dragged by its ⠿ title bar, so you can put it wherever the shot needs it.
 
 ## Panel drawing
 

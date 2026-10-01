@@ -40,7 +40,20 @@ CCs are accepted on any channel and sent on ch 1. A value that came in over MIDI
 
 ## URL flags
 
-`?demo` scripted demo · `?midi` connect MIDI · `?drawer` open the MIDI drawer · `?transparent` + `?bare` for an OBS browser-source overlay · `?view=pads|panel` · `?zoom=1.5`
+All combinable.
+
+| Flag | Effect |
+|------|--------|
+| `?demo` | start the scripted demo |
+| `?midi` | connect Web MIDI (needs a prior permission grant) |
+| `?drawer` | open the MIDI drawer (CC faders + piano) |
+| `?menu` | open the ☰ menu |
+| `?transparent` | transparent page background, for OBS browser-source overlays |
+| `?bare` | hide the ☰ menu |
+| `?view=pads` / `?view=panel` | crop to the pad field / the knob panel |
+| `?zoom=1.5` | scale everything |
+
+**OBS setup.** Add a Browser Source pointing at `http://localhost:5173/?midi&transparent&bare` (or the hosted page with the same flags). The panel floats over your footage as an overlay, with no visible browser window. OBS browser sources are Chromium, so Web MIDI works inside them. The telemetry sends the full state in every frame, so restarting OBS or the source mid-stream picks the state straight back up. The info panel can be dragged by its ⠿ title bar, so you can put it wherever the shot needs it. Label mode, text sizes and positions are stored per browser, so set them inside OBS itself. Leave out `&bare` for a moment, right-click the source → *Interact*, and use ☰ → *Settings*.
 
 ## Panel drawing
 

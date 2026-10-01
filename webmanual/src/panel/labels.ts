@@ -13,7 +13,7 @@ import { OledMini } from './oled-mini';
 import { OledUi } from './oled-ui';
 import { svgToOverlay as mapSvgToOverlay, labelScale, LABEL_SCALE_EVENT } from './overlay-utils';
 import type { DeviceStore, DeviceState } from '../core/state';
-import { SettingsBar } from '../ui/settings-bar';
+import { SettingsMenu } from '../ui/settings-menu';
 import type { MenuSection } from '../ui/toolbar';
 import { CONTROLS, PADS, SWITCHES, ATTACK_NAMES, DECAY_NAMES, CC_KNOB_BASE } from '../core/controls-meta';
 import {
@@ -83,7 +83,7 @@ export class Labels {
     private overlay: HTMLElement,
     private panel: Panel,
     private store: DeviceStore,
-    settings: SettingsBar,
+    settings: SettingsMenu,
     addToMenu: (el: HTMLElement, section?: MenuSection) => void,
   ) {
     this.staticWrap = document.createElement('div');
@@ -164,10 +164,10 @@ export class Labels {
     this.infoPanel.append(handle, scroll, grip);
     overlay.appendChild(this.infoPanel);
 
-    // --- settings bar entries
+    // --- settings menu entries
     const storedMode = localStorage.getItem(OVERLAY_MODE_KEY) as OverlayMode | null;
     if (storedMode && OVERLAY_MODES.includes(storedMode)) this.overlayMode = storedMode;
-    const ovBtn = SettingsBar.button(OVERLAY_MODE_LABEL[this.overlayMode],
+    const ovBtn = SettingsMenu.button(OVERLAY_MODE_LABEL[this.overlayMode],
       'Label overlay: screen only / designators / full labels', () => {
         this.overlayMode = OVERLAY_MODES[(OVERLAY_MODES.indexOf(this.overlayMode) + 1) % OVERLAY_MODES.length];
         localStorage.setItem(OVERLAY_MODE_KEY, this.overlayMode);
@@ -176,7 +176,7 @@ export class Labels {
       });
     settings.addGroup('Labels', 10, ovBtn);
     const mkFont = (txt: string, title: string, d: number) =>
-      SettingsBar.button(txt, title, () => {
+      SettingsMenu.button(txt, title, () => {
         this.applyInfoScale(this.infoScale + d);
         localStorage.setItem(INFO_SCALE_KEY, String(this.infoScale));
       });

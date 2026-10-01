@@ -8,14 +8,14 @@ import { Labels } from './panel/labels';
 import { enableInteraction } from './panel/interact';
 import { enablePanelLayout } from './panel/layout';
 import { Toolbar } from './ui/toolbar';
-import { SettingsBar } from './ui/settings-bar';
+import { SettingsMenu } from './ui/settings-menu';
 import { CcPanel } from './ui/ccpanel';
 import { MockTransport } from './transport/mock';
 import { MidiTransport } from './transport/midi';
 
 // URL flags (all combinable):
 //   ?transparent   transparent page background (OBS browser-source overlay)
-//   ?bare          hide the toolbar and the settings bar
+//   ?bare          hide the ☰ menu
 //   ?view=pads|panel   crop to the pad field / the knob panel
 //   ?zoom=1.5      scale everything
 //   ?demo          start the scripted demo
@@ -30,13 +30,12 @@ const input = new Input(sim);
 const panelWrap = document.getElementById('panel-wrap')!;
 const overlay = document.getElementById('overlay')!;
 const topbar = document.getElementById('topbar')!;
-const stage = document.getElementById('stage')!;
 
 const panel = new Panel(panelWrap);
 new PanelBindings(panel, store);
-const settings = new SettingsBar(stage);
-const layout = enablePanelLayout(panel, overlay, settings);
 const toolbar = new Toolbar(topbar, store, sim);
+const settings = new SettingsMenu(toolbar.settingsSection());
+const layout = enablePanelLayout(panel, overlay, settings);
 const labels = new Labels(overlay, panel, store, settings, (el, section) => toolbar.addMenuItem(el, section));
 enableInteraction(panel, store, input, (f) => labels.setFocus(f));
 const ccPanel = new CcPanel((el) => toolbar.addMenuItem(el), store, input);
@@ -45,10 +44,7 @@ if (params.has('drawer')) ccPanel.open();
 if (params.has('menu')) toolbar.openMenu();
 
 if (params.has('transparent')) document.body.classList.add('transparent');
-if (params.has('bare')) {
-  topbar.style.display = 'none';
-  settings.hide();
-}
+if (params.has('bare')) topbar.style.display = 'none';
 
 // Mobile browsers change the visual viewport when the URL bar slides away
 // without a window resize; everything over the drawing re-places on resize.

@@ -1,8 +1,9 @@
 // Compact topbar: a single hamburger button opening a dropdown menu, from
-// TouchPlaited's visualizer. Three captioned sections:
+// TouchPlaited's visualizer. Four captioned sections:
 //
 //   Connect   the transports, with the connection status under them
 //   Display   everything that changes what you see, incl. fullscreen/wake lock
+//   Settings  label mode, text sizes and the reset (ui/settings-menu.ts)
 //   Elsewhere links that leave the page — rows with an arrow, not buttons
 //
 // New entries slot in via addMenuItem(el, section) / addAction(). Hidden
@@ -14,7 +15,7 @@ import { MidiTransport } from '../transport/midi';
 import { MockTransport } from '../transport/mock';
 import type { LocalDevice } from '../core/sim';
 
-export type MenuSection = 'connect' | 'view';
+export type MenuSection = 'connect' | 'view' | 'settings';
 
 const WAKE_KEY = 'tv-wake-lock';
 
@@ -48,6 +49,7 @@ export class Toolbar {
     this.sections = {
       connect: this.section('Connect'),
       view: this.section('Display'),
+      settings: this.section('Settings'),
     };
     this.sections.connect.append(
       this.item('Connect MIDI', () => this.start(new MidiTransport(store))),
@@ -90,7 +92,7 @@ export class Toolbar {
       links.appendChild(a);
     }
 
-    this.menu.append(this.sections.connect, this.sections.view, links);
+    this.menu.append(this.sections.connect, this.sections.view, this.sections.settings, links);
     this.el.append(burger, this.menu);
     parent.appendChild(this.el);
 
@@ -114,6 +116,11 @@ export class Toolbar {
     const b = this.item(label, onClick);
     this.addMenuItem(b, section);
     return b;
+  }
+
+  /** The Settings section, for SettingsMenu to fill. */
+  settingsSection(): HTMLDivElement {
+    return this.sections.settings;
   }
 
   openMenu() {

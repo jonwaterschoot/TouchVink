@@ -49,3 +49,11 @@ libs:
 clean-libs:
 	"$(MAKE)" -C $(LIBDAISY_DIR) clean
 	"$(MAKE)" -C $(DAISYSP_DIR) clean
+
+# `make release VERSION=0.3.0` -> build/touchvink-v0.3.0.bin: the lowercase,
+# versioned name the Synthux community directory asks for on release assets.
+release: all
+ifndef VERSION
+	$(error usage: make release VERSION=x.y.z)
+endif
+	cp $(BUILD_DIR)/$(TARGET).bin $(BUILD_DIR)/touchvink-v$(VERSION).bin

@@ -12,6 +12,7 @@ TouchVink: Jaap Vink-style feedback instrument, firmware for the Synthux Simple 
 
 ## Build / test
 - Firmware: `make libs` once, then `make` → build/TouchVink.bin. `make program-dfu` to flash.
+  Release asset: `make release VERSION=x.y.z` → build/touchvink-vx.y.z.bin (lowercase, versioned).
 - Desktop: `make -C host && ./host/render` from the repo root → host/out/*.wav plus
   per-second dBFS and NaN report. Run this after any dsp/ change; all scenarios must
   report no NaN and stay below 0 dBFS.

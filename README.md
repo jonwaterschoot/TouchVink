@@ -80,6 +80,8 @@ make program-dfu
 
 `make NO_USB_MIDI=1` gives the USB port to serial logging instead. TRS MIDI (D13/D14, modded boards) is opt-in with `make TRS_MIDI=1`; see `midi/midi_io.h` for why.
 
+For a release, `make release VERSION=0.3.0` writes `build/touchvink-v0.3.0.bin`. Upload that file, so release assets keep a lowercase, versioned name.
+
 Uses the **Synthux fork of libDaisy** and DaisySP (with DaisySP-LGPL for the reverb), as submodules.
 
 ### Listen without hardware

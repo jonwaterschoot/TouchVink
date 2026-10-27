@@ -1,0 +1,13 @@
+{
+  "target": "TouchVink",
+  "file": "TouchVink-e1e4334f1486.wasm",
+  "abi": "simple-touch-web/1",
+  "sha256": "e1e4334f14860f0581979c958372a2c21f63ef77dda90f8f0986ddbe82f36ef1",
+  "bytes": 116281,
+  "url": "https://raw.githubusercontent.com/jonwaterschoot/TouchVink/simple-touch-web/TouchVink-e1e4334f1486.wasm",
+  "source": {
+    "repository": "jonwaterschoot/TouchVink",
+    "commit": "39037b4f59c494e8a8a0f8e5d73a90bbfca0184c"
+  },
+  "built": "2026-10-27T17:15:19.177Z"
+}

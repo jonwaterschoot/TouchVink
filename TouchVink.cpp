@@ -445,7 +445,9 @@ static void ServiceMidi() {
     oled_ui.Service(t, now, oled);
 }
 
-int main() {
+// main() in two halves, so the browser build (simple-touch-web) can run the
+// loop one pass at a time between audio blocks.
+static void Setup() {
     hw.Init();
     hw.SetAudioBlockSize(cfg::kBlockSize);
     hw.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_48KHZ);
@@ -467,12 +469,22 @@ int main() {
     midi.Init();
     ProcessKnobsAndSwitches();
     hw.StartAudio(AudioCallback);
-
-    while (true) {
-        ProcessKnobsAndSwitches();
-        ProcessPads();
-        ProcessLed();
-        ServiceMidi();
-        System::Delay(1);  // ~1 kHz control rate
-    }
 }
+
+static void Loop() {
+    ProcessKnobsAndSwitches();
+    ProcessPads();
+    ProcessLed();
+    ServiceMidi();
+    System::Delay(1);  // ~1 kHz control rate
+}
+
+#ifdef SIMPLE_TOUCH_WEB
+#include "simple_touch_web.h"
+ST_WEB_FIRMWARE(Setup, Loop)
+#else
+int main() {
+    Setup();
+    while (true) Loop();
+}
+#endif

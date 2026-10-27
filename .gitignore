@@ -3,3 +3,6 @@ host/render
 host/out/
 *.o
 .DS_Store
+
+# browser build (simple-touch-web)
+build-web/

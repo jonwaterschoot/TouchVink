@@ -31,6 +31,10 @@ flowchart LR
 
 ## Controls
 
+![TouchVink: what each control does](docs/touchvink-controls.png)
+
+The labels come from [`simple-touch-labels.json`](simple-touch-labels.json), made with [Simple Touch labels](https://jonwaterschoot.github.io/simple-touch-labels/); the library shows them in this look and can play TouchVink in the browser.
+
 | | |
 |---|---|
 | **S30** | Internal source: osc ↔ noise |

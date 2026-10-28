@@ -124,3 +124,17 @@ In no particular order
 - [TouchString](https://github.com/vincentltm/TouchString) (vincentltm) — MPR121 pressure-sensing approach
 - [TouchPlaited](https://github.com/jonwaterschoot/TouchPlaited) — MIDI I/O, SysEx telemetry, OLED driver and boot screen, and the visualizer the web manual is built from
 - [libDaisy (Synthux fork)](https://github.com/Synthux-Academy/libDaisy), [DaisySP](https://github.com/electro-smith/DaisySP)
+
+## Licence
+
+The TouchVink code is released under the [MIT License](LICENSE).
+
+It builds on:
+
+- [libDaisy (Synthux fork)](https://github.com/Synthux-Academy/libDaisy) and [DaisySP](https://github.com/electro-smith/DaisySP): MIT License.
+- [DaisySP-LGPL](https://github.com/electro-smith/DaisySP-LGPL) for the reverb (`ReverbSc`, `USE_DAISYSP_LGPL = 1` in the Makefile): LGPL-2.1. The firmware (`.bin`) and the browser build (`.wasm`) contain it, so for that part those builds fall under the LGPL. Its source comes with the DaisySP submodule, and this repository has everything needed to rebuild them with a changed version of it (see [Build](#build)).
+
+Not covered by the MIT License:
+
+- The Simple Touch panel drawing, © Roey Tsemah / [Synthux Academy](https://synthux.academy): `img/simpletouchdrawing_blank.svg`, `webmanual/assets/panel.svg` (made from it) and the images that show it (`docs/touchvink-controls.png`, `img/screenshotcontrols_TouchVink.png`).
+- The faceplate, `img/faceplate.jpg`: a heavily pixelated photo of Jaap Vink, found at [France Musique](https://www.radiofrance.fr/francemusique/podcasts/l-experimentale/actualites-selection-musicale-du-grm-et-de-joseph-ghosn-avec-jaap-vink-8663688) and in many other places; the photographer is unknown. It is credited here as a tribute and will be removed on request.

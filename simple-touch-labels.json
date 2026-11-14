@@ -210,6 +210,9 @@
     },
     "desktop": {}
   },
+  "listing": {
+    "video": "https://www.youtube.com/shorts/zW_fxw2P43o"
+  },
   "emulator": {
     "wasm": "https://raw.githubusercontent.com/jonwaterschoot/TouchVink/simple-touch-web/TouchVink-e1e4334f1486.wasm",
     "abi": "simple-touch-web/1",

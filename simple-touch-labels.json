@@ -212,7 +212,8 @@
   },
   "listing": {
     "tags": ["FX"],
-    "video": [{ "src": "https://www.youtube.com/shorts/zW_fxw2P43o" }]
+    "video": [{ "src": "https://www.youtube.com/shorts/zW_fxw2P43o" }],
+    "links": [{ "url": "https://jonwaterschoot.github.io/TouchVink/", "text": "Interactive manual" }]
   },
   "emulator": {
     "wasm": "https://raw.githubusercontent.com/jonwaterschoot/TouchVink/simple-touch-web/TouchVink-e1e4334f1486.wasm",
